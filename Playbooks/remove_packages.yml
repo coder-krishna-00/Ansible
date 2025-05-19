@@ -1,0 +1,11 @@
+---
+- name: remove a package
+  hosts: all
+  become: true
+  tasks:
+  
+  - name: Remove httpd
+    ansible.builtin.yum:
+      name: httpd
+      state: absent
+
