@@ -4,8 +4,10 @@
   become: true
   tasks:
   
-  - name: Remove httpd
+  - name: Remove apache & vim
     ansible.builtin.yum:
-      name: httpd
+      name: 
+        - "{apache_package}"
+        - vim
       state: absent
 
