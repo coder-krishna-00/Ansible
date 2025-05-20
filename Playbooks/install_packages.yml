@@ -7,10 +7,29 @@
   - name: Install httpd
     ansible.builtin.yum:
       name: httpd
+# We need these tasks to run only if the distribution is specific.
+    when: ansible_distribution == 'CentOS'  
 
   - name: Start and enable httpd
     ansible.builtin.service:
       name: httpd
       state: started
       enabled: true
+    when: ansible_distribution == 'CentOS'
+
+  - name: Install apache
+    ansible.builtin.apt:
+      name: apache
+      state: Latest
+# We need these tasks to run only if the distribution is specific.
+    when: ansible_distribution == 'Ubuntu'
+
+# No need to start and enable in Ubuntu
+
+#  - name: Start and enable httpd
+#    ansible.builtin.service:
+#      name: httpd
+#      state: started
+#      enabled: true
+#    when: ansible_distribution == 'Ubuntu'
 
