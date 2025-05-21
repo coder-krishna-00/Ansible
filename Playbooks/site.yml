@@ -6,12 +6,14 @@
   pre_tasks:
     
     - name: Update CentOS servers
+      tags: always
       ansible.builtin.yum:
         update_only: yes
         update_cache: yes
       when: ansible_distribution == "CentOS"
 
     - name: Update Ubuntu servers
+      tags: always
       ansible.builtin.apt:
         upgrade: dist
         update_cache: yes
@@ -23,6 +25,7 @@
   tasks:
   
     - name: Install httpd & vim
+      tags: apache,centos,httpd
       ansible.builtin.yum:
         name: 
           - httpd
@@ -37,6 +40,7 @@
       when: ansible_distribution == 'CentOS'
 
     - name: Install apache & vim
+      tags: apache,ubuntu,apache2
       ansible.builtin.apt:
         name:
           - apache2
@@ -51,18 +55,24 @@
   tasks:
     
     - name: Install mariadb package (CentOS)
+      tags: db,centos
       ansible.builtin.yum:
-        name: mariadb
-        state: latest
+        name: 
+          - mariadb
+          - mariadb-server
+        state: present
+      ignore_errors: yes
       when: ansible_distribution == "CentOS"
 
     - name: Install mariadb package (Ubuntu)
+      tags: db,ubuntu
       ansible.builtin.apt:
         name: mariadb-server
         state: latest
       when: ansible_distribution == "Ubuntu"
 
 - name: Install samba in file servers
+  tags: samba
   hosts: file_servers
   become: true
   tasks:
