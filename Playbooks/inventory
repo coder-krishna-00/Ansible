@@ -16,3 +16,7 @@ server1
 [file_servers]
 client1
 ubuntuclient
+
+[centos]
+server1
+client1
