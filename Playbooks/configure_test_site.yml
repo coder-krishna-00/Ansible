@@ -1,0 +1,70 @@
+---
+- name: Update all servers
+  hosts: all
+  become: true
+# pre_tasks will run first before any other tasks
+  pre_tasks:
+    
+    - name: Update CentOS servers
+      tags: always
+      ansible.builtin.dnf:
+        update_only: true
+        update_cache: true
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: Update Ubuntu servers
+      tags: always
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+- name: Configure webServers
+  hosts: web_servers
+  become: true
+  tasks:
+  
+    - name: Install httpd
+      tags: apache,centos,httpd
+      ansible.builtin.dnf:
+        name: 
+          - httpd
+      when: ansible_distribution == 'CentOS'
+
+    - name: Start and enable apache
+      tags: apache,centos,httpd
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+      when: ansible_distribution == 'CentOS'
+
+#Adding to firewall
+    
+    - name: Enable http service in firewall
+      tags: apache,centos,httpd
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+#        permanent: true {Not adding it permanently for now}
+        immediate: true
+      when: ansible_distribution == 'CentOS'
+
+    - name: copy default html file for site
+      tags: apache,centos,httpd
+      ansible.builtin.copy:
+        src: default_site.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Install apache
+      tags: apache,ubuntu,apache2
+      ansible.builtin.apt:
+        name:
+          - apache2
+      when: ansible_distribution == 'Ubuntu'
+
+# No need to start and enable in Ubuntu
