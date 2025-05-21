@@ -1,0 +1,74 @@
+---
+- name: Update all servers
+  hosts: all
+  become: true
+# pre_tasks will run first before any other tasks
+  pre_tasks:
+    
+    - name: Update CentOS servers
+      ansible.builtin.yum:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+    - name: Update Ubuntu servers
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+- name: Configure webServers
+  hosts: web_servers
+  become: true
+  tasks:
+  
+    - name: Install httpd & vim
+      ansible.builtin.yum:
+        name: 
+          - httpd
+          - vim
+      when: ansible_distribution == 'CentOS'
+
+    - name: Start and enable apache
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install apache & vim
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - vim
+      when: ansible_distribution == 'Ubuntu'
+
+# No need to start and enable in Ubuntu
+
+- name: Install mariadb in db servers
+  hosts: db_servers
+  become: true
+  tasks:
+    
+    - name: Install mariadb package (CentOS)
+      ansible.builtin.yum:
+        name: mariadb
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: Install mariadb package (Ubuntu)
+      ansible.builtin.apt:
+        name: mariadb-server
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+- name: Install samba in file servers
+  hosts: file_servers
+  become: true
+  tasks:
+    - name: Install samba
+      ansible.builtin.package:
+        name: samba
+        state: latest
+
+#package module is used as both have same package name

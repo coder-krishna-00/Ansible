@@ -1,3 +1,18 @@
-client1 apache_package=httpd
-server1	apache_package=httpd
-#ubuntuclient apache_package=apache2
+[all]
+client1
+server1
+ubuntuclient ansible_user=john
+
+[web_servers]
+server1
+ubuntuclient
+
+[db_servers]
+client1
+
+[log_servers]
+server1
+
+[file_servers]
+client1
+ubuntuclient
