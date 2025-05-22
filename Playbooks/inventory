@@ -1,7 +1,7 @@
 [all]
 client1
 server1
-ubuntuclient ansible_user=john
+ubuntuclient
 
 [web_servers]
 server1
