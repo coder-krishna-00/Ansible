@@ -44,7 +44,6 @@
       ansible.builtin.apt:
         name:
           - apache2
-          - vim
       when: ansible_distribution == 'Ubuntu'
 
 # No need to start and enable in Ubuntu
