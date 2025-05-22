@@ -1,0 +1,48 @@
+---
+- name: Update all servers
+  hosts: all
+  become: true
+# pre_tasks will run first before any other tasks
+  pre_tasks:
+    
+    - name: Update CentOS servers
+      tags: always
+      ansible.builtin.dnf:
+        update_only: true
+        update_cache: true
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: Update Ubuntu servers
+      tags: always
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+- name: Create ansibleuser in all servers
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Create ansibleuser
+      tags: always
+      ansible.builtin.user:
+        name: ansibleuser
+        groups: root
+
+    - name: Add ssh key for ansibleuser
+      tags: always
+      ansible.posix.authorized_key:
+        user: ansibleuser
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICL1z/Y9Ijqe7L4pkFLtgiQBL3TN/eHmHfH74BtY6myN ansible"
+
+    - name: Add sudoers file for ansibleuser
+      tags: always
+      ansible.builtin.copy:
+        src: sudoer_ansibleuser
+        dest: /etc/sudoers.d/ansibleuser
+        owner: root
+        group: root
+        mode: 0440
+
