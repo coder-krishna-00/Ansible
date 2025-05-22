@@ -5,20 +5,23 @@
 # pre_tasks will run first before any other tasks
   pre_tasks:
     
-    - name: Update CentOS servers
+    - name: Update cache on CentOS servers
       tags: always
       ansible.builtin.dnf:
-        update_only: true
         update_cache: true
         state: latest
+      changed_when: false
       when: ansible_distribution == "CentOS"
 
-    - name: Update Ubuntu servers
+# changed_when: false will not show changed after the playook is run even after there are changes.
+
+    - name: Update cache on Ubuntu servers
       tags: always
       ansible.builtin.apt:
-        upgrade: dist
         update_cache: yes
+      changed_when: false
       when: ansible_distribution == "Ubuntu"
+
 
 - name: Configure webServers
   hosts: web_servers
